@@ -1,12 +1,14 @@
 # app.py
 import streamlit as st
-import base64, requests
+import base64, requests, json
 from datetime import datetime
 
 st.set_page_config(page_title="Field Reporter", layout="centered")
 st.title("Field Reporter — demo (Make integration)")
 
 WEBHOOK_URL = st.secrets.get("MAKE_WEBHOOK_URL")  # set this in Streamlit secrets
+
+st.markdown("Upload a photo and optionally paste coordinates. We'll send this to the Make automation pipeline.")
 
 name = st.text_input("Your name", value="Anonymous")
 uploaded = st.file_uploader("Upload photo (jpg/png)", type=["jpg","jpeg","png"])
@@ -31,10 +33,10 @@ if st.button("Send to Make for analysis"):
                 data["longitude"] = lng
             except:
                 st.warning("Invalid lat,lng format. Use: 24.1234,77.1234")
+        # Post to Make webhook
         with st.spinner("Sending to Make..."):
-            try:
-                resp = requests.post(WEBHOOK_URL, json=data, timeout=60)
-                resp.raise_for_status()
+            resp = requests.post(st.secrets["MAKE_WEBHOOK_URL"], json=data, timeout=60)
+            if resp.status_code in (200,201):
                 result = resp.json()
                 st.success("Analysis complete.")
                 st.write("**Category:**", result.get("category"), " (", result.get("confidence"), ")")
@@ -44,5 +46,7 @@ if st.button("Send to Make for analysis"):
                 st.write(result.get("report_hi"))
                 st.markdown("**Address**")
                 st.write(result.get("address"))
-            except Exception as e:
-                st.error(f"Request failed: {e}")
+                if result.get("sms_status"):
+                    st.info("SMS status: " + str(result.get("sms_status")))
+            else:
+                st.error(f"Make webhook returned {resp.status_code}: {resp.text}")

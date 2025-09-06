@@ -1,5 +1,5 @@
-const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"; // Replace with real key
-const WEBHOOK_URL = "YOUR_MAKE_WEBHOOK_URL";  // Paste from Make.com
+const GEMINI_API_KEY = "AIzaSyCNqAo95dJT9RPuBTjLKyT15NT5kIOi-Zk"; // Replace with real key
+const WEBHOOK_URL = "o3u4rjk9yv5ree7agi9bjbc283xo8a8o@hook.eu2.make.com";  // Paste from Make.com
 
 async function generateReport() {
   const note = document.getElementById("noteInput").value;

@@ -15,7 +15,7 @@ async function generateReport() {
     reader.readAsDataURL(photoInput.files[0]);
   }
 
-  reportBox.innerHTML = "<p>Generating report...</p>";
+  reportBox.innerHTML = "<p>⏳ Generating report...</p>";
 
   try {
     // 🔑 Call your backend route (not Google API directly)
@@ -27,7 +27,15 @@ async function generateReport() {
       })
     });
 
+    console.log("🌐 Backend response status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server error ${response.status}: ${errorText}`);
+    }
+
     const data = await response.json();
+    console.log("✅ Backend JSON:", data);
 
     // ✅ Use backend response shape
     const text = data.output || "No report generated.";
@@ -36,8 +44,10 @@ async function generateReport() {
 
     // Update Send buttons
     document.getElementById("sendButtons").style.display = "flex";
-    document.getElementById("smsButton").href = `sms:+911234567890?body=${encodeURIComponent(text)}`;
-    document.getElementById("waButton").href = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    document.getElementById("smsButton").href =
+      `sms:+911234567890?body=${encodeURIComponent(text)}`;
+    document.getElementById("waButton").href =
+      `https://wa.me/?text=${encodeURIComponent(text)}`;
 
     // 🔴 Send to Google Sheets via Make.com webhook
     fetch(WEBHOOK_URL, {
@@ -49,9 +59,14 @@ async function generateReport() {
         report: text,
         photoURL: photoURL
       })
+    }).then(res => {
+      console.log("📤 Sent to Make.com, status:", res.status);
+    }).catch(err => {
+      console.error("❌ Error sending to Make.com:", err);
     });
- } catch (err) {
-  reportBox.innerHTML = "<p>Error generating report.</p>";
-  console.error("❌ Frontend error:", err);
-}
+
+  } catch (err) {
+    reportBox.innerHTML = "<p>❌ Error generating report. Check console logs.</p>";
+    console.error("❌ Frontend error:", err);
+  }
 }

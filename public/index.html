@@ -2,29 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Field Reporter Agent</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Field Reporter</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>Field Reporter Agent</header>
-
   <div class="container">
-    <!-- Upload -->
-    <input type="file" id="photoInput" accept="image/*" />
-    <textarea id="noteInput" placeholder="Add a short note (optional)"></textarea>
+    <h1>📰 Field Reporter Agent</h1>
+
+    <!-- Note Input -->
+    <label for="noteInput">Your Note:</label>
+    <textarea id="noteInput" placeholder="Describe the issue..."></textarea>
+
+    <!-- Photo Upload -->
+    <label for="photoInput">Upload Photo:</label>
+    <input type="file" id="photoInput" accept="image/*"/>
+    <div id="photoPreview"></div>
+
+    <!-- Action Button -->
     <button onclick="generateReport()">Generate Report</button>
 
-    <!-- Preview -->
-    <div class="photo" id="photoPreview">[Photo Preview]</div>
-    <div class="report" id="reportBox">
-      <p>Generated report will appear here...</p>
+    <!-- Report Output -->
+    <div id="reportBox" class="report-box">
+      <p>Report will appear here...</p>
     </div>
 
-    <!-- Send Options -->
-    <div class="buttons" id="sendButtons" style="display:none;">
-      <a class="button sms" id="smsButton" href="#">Send SMS</a>
-      <a class="button whatsapp" id="waButton" href="#">Send WhatsApp</a>
+    <!-- Send Buttons -->
+    <div id="sendButtons" style="display:none; gap:10px; margin-top:15px;">
+      <a id="smsButton" class="btn" target="_blank">📱 Send SMS</a>
+      <a id="waButton" class="btn" target="_blank">💬 Send WhatsApp</a>
     </div>
   </div>
 

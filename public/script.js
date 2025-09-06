@@ -28,10 +28,9 @@ async function generateReport() {
     });
 
     const data = await response.json();
-    const text =
-      data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      data.output ||
-      "No report generated.";
+
+    // ✅ Use backend response shape
+    const text = data.output || "No report generated.";
 
     reportBox.innerHTML = `<p>${text.replace(/\n/g, "<br>")}</p>`;
 

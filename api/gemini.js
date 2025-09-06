@@ -1,4 +1,4 @@
-// /api/gemini.js
+// api/gemini.js
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Only POST requests allowed" });
@@ -20,7 +20,6 @@ export default async function handler(req, res) {
     );
 
     const data = await geminiResponse.json();
-    console.log("🔵 Gemini raw response:", data);
 
     if (!data.candidates) {
       return res.status(500).json({ error: "Gemini returned no candidates", raw: data });
@@ -28,7 +27,6 @@ export default async function handler(req, res) {
 
     const text = data.candidates[0].content.parts[0].text;
     res.status(200).json({ output: text });
-
   } catch (err) {
     console.error("❌ Backend error:", err);
     res.status(500).json({ error: "Error generating report" });

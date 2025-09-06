@@ -4,43 +4,30 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Only POST requests allowed" });
   }
 
-  const { message } = req.body;
-
-  if (!message) {
-    return res.status(400).json({ error: "Message is required" });
-  }
-
   try {
-    // Call Gemini API securely with your Vercel environment variable
-    const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" +
+    const { message } = req.body;
+
+    const geminiResponse = await fetch(
+      "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=" +
         process.env.GEMINI_API_KEY,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [
-            {
-              role: "user",
-              parts: [{ text: message }],
-            },
-          ],
+          contents: [{ role: "user", parts: [{ text: message }]}]
         }),
       }
     );
 
-    const data = await response.json();
+    const data = await geminiResponse.json();
+    console.log("🔵 Gemini raw:", data);
 
-    if (!response.ok) {
-      return res.status(500).json({
-        error: data.error || "Gemini API failed",
-      });
-    }
+    const text =
+      data.candidates?.[0]?.content?.parts?.[0]?.text || "No report generated.";
 
-    // Return the Gemini response to frontend
-    res.status(200).json(data);
+    res.status(200).json({ output: text });
   } catch (err) {
-    console.error("Gemini API error:", err);
-    res.status(500).json({ error: err.message });
+    console.error("❌ Backend error:", err);
+    res.status(500).json({ error: "Error generating report" });
   }
 }

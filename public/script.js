@@ -1,5 +1,4 @@
-const GEMINI_API_KEY = "AIzaSyCNqAo95dJT9RPuBTjLKyT15NT5kIOi-Zk"; // Replace with real key
-const WEBHOOK_URL = "o3u4rjk9yv5ree7agi9bjbc283xo8a8o@hook.eu2.make.com";  // Paste from Make.com
+const WEBHOOK_URL = "o3u4rjk9yv5ree7agi9bjbc283xo8a8o@hook.eu2.make.com"; // Make.com webhook
 
 async function generateReport() {
   const note = document.getElementById("noteInput").value;
@@ -19,24 +18,20 @@ async function generateReport() {
   reportBox.innerHTML = "<p>Generating report...</p>";
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{
-            role: "user",
-            parts: [{
-              text: `Classify this civic issue and generate bilingual (English + Hindi) report. Note: ${note}`
-            }]
-          }]
-        })
-      }
-    );
+    // 🔑 Call your backend route (not Google API directly)
+    const response = await fetch("/api/gemini", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: `Classify this civic issue and generate bilingual (English + Hindi) report. Note: ${note}`
+      })
+    });
 
     const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "No report generated.";
+    const text =
+      data.candidates?.[0]?.content?.parts?.[0]?.text ||
+      data.output ||
+      "No report generated.";
 
     reportBox.innerHTML = `<p>${text.replace(/\n/g, "<br>")}</p>`;
 
@@ -56,9 +51,8 @@ async function generateReport() {
         photoURL: photoURL
       })
     });
-
   } catch (err) {
-    reportBox.innerHTML = "<p>Error generating report. Check API key.</p>";
+    reportBox.innerHTML = "<p>Error generating report.</p>";
     console.error(err);
   }
 }

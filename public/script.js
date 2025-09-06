@@ -50,8 +50,8 @@ async function generateReport() {
         photoURL: photoURL
       })
     });
-  } catch (err) {
-    reportBox.innerHTML = "<p>Error generating report.</p>";
-    console.error(err);
-  }
+ } catch (err) {
+  reportBox.innerHTML = "<p>Error generating report.</p>";
+  console.error("❌ Frontend error:", err);
+}
 }

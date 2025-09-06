@@ -19,15 +19,14 @@ async function generateReport() {
 
   try {
     // 🔑 Call your backend route (not Google API directly)
-    const response = await fetch("/api/gemini", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: `Classify this civic issue and generate bilingual (English + Hindi) report. Note: ${note}`
-      })
-    });
-
-    console.log("🌐 Backend response status:", response.status);
+   const response = await fetch("/api/gemini", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    message: `Classify this civic issue and generate bilingual (English + Hindi) report. Note: ${note}`
+  })
+});
+   console.log("🌐 Backend response status:", response.status);
 
     if (!response.ok) {
       const errorText = await response.text();

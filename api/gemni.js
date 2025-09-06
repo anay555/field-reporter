@@ -20,12 +20,15 @@ export default async function handler(req, res) {
     );
 
     const data = await geminiResponse.json();
-    console.log("🔵 Gemini raw:", data);
+    console.log("🔵 Gemini raw response:", data);
 
-    const text =
-      data.candidates?.[0]?.content?.parts?.[0]?.text || "No report generated.";
+    if (!data.candidates) {
+      return res.status(500).json({ error: "Gemini returned no candidates", raw: data });
+    }
 
+    const text = data.candidates[0].content.parts[0].text;
     res.status(200).json({ output: text });
+
   } catch (err) {
     console.error("❌ Backend error:", err);
     res.status(500).json({ error: "Error generating report" });

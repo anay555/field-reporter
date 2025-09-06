@@ -11,6 +11,7 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Call Gemini API securely with your Vercel environment variable
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" +
         process.env.GEMINI_API_KEY,
@@ -20,6 +21,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           contents: [
             {
+              role: "user",
               parts: [{ text: message }],
             },
           ],
@@ -30,11 +32,15 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) {
-      return res.status(500).json({ error: data.error || "Gemini API failed" });
+      return res.status(500).json({
+        error: data.error || "Gemini API failed",
+      });
     }
 
+    // Return the Gemini response to frontend
     res.status(200).json(data);
   } catch (err) {
+    console.error("Gemini API error:", err);
     res.status(500).json({ error: err.message });
   }
 }
